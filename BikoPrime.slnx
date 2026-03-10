@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README_ARCHITECTURE.md" />
+  </Folder>
+  <Project Path="src/BikoPrime.API/BikoPrime.API.csproj" />
+  <Project Path="src/BikoPrime.Application/BikoPrime.Application.csproj" />
+  <Project Path="src/BikoPrime.Domain/BikoPrime.Domain.csproj" />
+  <Project Path="src/BikoPrime.Infrastructure/BikoPrime.Infrastructure.csproj" />
+  <Project Path="src/BikoPrime.Persistence/BikoPrime.Persistence.csproj" />
+  <Project Path="tests/BikoPrime.Tests/BikoPrime.Tests.csproj" />
+</Solution>
