@@ -1,0 +1,42 @@
+namespace BikoPrime.Persistence.Extensions;
+
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using BikoPrime.Application.Interfaces;
+using BikoPrime.Domain.Entities;
+using BikoPrime.Persistence.Data;
+using BikoPrime.Persistence.Repositories;
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("DefaultConnection") 
+            ?? "Server=(localdb)\\mssqllocaldb;Database=BikoPrimeDb;Trusted_Connection=true;";
+
+        // DbContext
+        services.AddDbContext<BikoPrimeDbContext>(options =>
+            options.UseSqlServer(connectionString));
+
+        // Repositories
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+        // Identity (tudo na Persistence, não na API!)
+        services.AddIdentity<User, IdentityRole<Guid>>(options =>
+        {
+            options.Password.RequiredLength = 6;
+            options.Password.RequireDigit = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
+            options.User.RequireUniqueEmail = true;
+        })
+        .AddEntityFrameworkStores<BikoPrimeDbContext>()
+        .AddDefaultTokenProviders();
+
+        return services;
+    }
+}
