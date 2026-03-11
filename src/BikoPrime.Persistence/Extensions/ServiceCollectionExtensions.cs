@@ -23,6 +23,16 @@ public static class ServiceCollectionExtensions
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IServiceRepository, ServiceRepository>();
+        services.AddScoped<IDemandRepository, DemandRepository>();
+        services.AddScoped<IConversationRepository, ConversationRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
+        services.AddScoped<IContractRepository, ContractRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<IUserFollowRepository, UserFollowRepository>();
+
+        // IHttpContextAccessor for accessing user claims in handlers
+        services.AddHttpContextAccessor();
 
         // Identity (tudo na Persistence, não na API!)
         services.AddIdentity<User, IdentityRole<Guid>>(options =>

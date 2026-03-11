@@ -50,4 +50,27 @@ public class UserRepository : IUserRepository
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<User>> SearchAsync(string query)
+    {
+        return await _context.Users
+            .Where(u => u.UserName.Contains(query) || u.Email.Contains(query))
+            .OrderBy(u => u.UserName)
+            .ToListAsync();
+    }
+
+    public async Task<List<User>> GetByIdsAsync(List<Guid> ids)
+    {
+        return await _context.Users
+            .Where(u => ids.Contains(u.Id))
+            .ToListAsync();
+    }
+
+    public async Task<List<User>> GetRecommendedAsync()
+    {
+        return await _context.Users
+            .OrderByDescending(u => u.CreatedAt)
+            .Take(10)
+            .ToListAsync();
+    }
 }
