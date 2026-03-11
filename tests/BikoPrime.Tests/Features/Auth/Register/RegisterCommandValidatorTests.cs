@@ -22,7 +22,7 @@ public class RegisterCommandValidatorTests
             Name = "Test User",
             UserName = "testuser",
             Email = "test@email.com",
-            Phone = "(11) 99999-1111",
+            PhoneNumber = "(11) 99999-1111",
             Password = "Password123"
         };
 
@@ -42,7 +42,7 @@ public class RegisterCommandValidatorTests
             Name = string.Empty,
             UserName = "testuser",
             Email = "test@email.com",
-            Phone = "(11) 99999-1111",
+            PhoneNumber = "(11) 99999-1111",
             Password = "Password123"
         };
 
@@ -62,7 +62,7 @@ public class RegisterCommandValidatorTests
             Name = "Test User",
             UserName = "testuser",
             Email = "invalid-email",
-            Phone = "(11) 99999-1111",
+            PhoneNumber = "(11) 99999-1111",
             Password = "Password123"
         };
 
@@ -82,7 +82,7 @@ public class RegisterCommandValidatorTests
             Name = "Test User",
             UserName = "testuser",
             Email = "test@email.com",
-            Phone = "(11) 99999-1111",
+            PhoneNumber = "(11) 99999-1111",
             Password = "short"
         };
 
@@ -102,7 +102,7 @@ public class RegisterCommandValidatorTests
             Name = "Test User",
             UserName = "invalid@user",
             Email = "test@email.com",
-            Phone = "(11) 99999-1111",
+            PhoneNumber = "(11) 99999-1111",
             Password = "Password123"
         };
 

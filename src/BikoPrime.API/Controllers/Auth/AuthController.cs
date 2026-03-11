@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
             Name = request.Name,
             UserName = request.UserName,
             Email = request.Email,
-            Phone = request.Phone,
+            PhoneNumber = request.PhoneNumber,
             Password = request.Password,
             AvatarUrl = request.AvatarUrl,
             Location = request.Location,

@@ -17,7 +17,7 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
             .NotEmpty().WithMessage("O campo 'email' é obrigatório.")
             .EmailAddress().WithMessage("O e-mail deve ser válido.");
 
-        RuleFor(x => x.Phone)
+        RuleFor(x => x.PhoneNumber)
             .NotEmpty().WithMessage("O campo 'phone' é obrigatório.");
 
         RuleFor(x => x.Password)

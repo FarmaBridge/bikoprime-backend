@@ -36,7 +36,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
             Id = Guid.NewGuid(),
             UserName = request.UserName,
             Email = request.Email,
-            PhoneNumber = request.Phone,
+            PhoneNumber = request.PhoneNumber,
             AvatarUrl = request.AvatarUrl ?? string.Empty,
             Latitude = request.Location?.Latitude ?? 0,
             Longitude = request.Location?.Longitude ?? 0,
