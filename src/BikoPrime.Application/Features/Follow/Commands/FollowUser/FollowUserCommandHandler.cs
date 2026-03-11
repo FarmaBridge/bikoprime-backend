@@ -27,14 +27,19 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, Unit>
             throw new UnauthorizedAccessException("User not authenticated");
         }
 
-        if (parsedUserId == request.TargetUserId)
+        if (string.IsNullOrEmpty(request.FollowingId) || !Guid.TryParse(request.FollowingId, out var targetUserId))
+        {
+            throw new InvalidOperationException("Invalid target user ID");
+        }
+
+        if (parsedUserId == targetUserId)
             throw new InvalidOperationException("You cannot follow yourself");
 
-        var targetUser = await _userRepository.GetByIdAsync(request.TargetUserId);
+        var targetUser = await _userRepository.GetByIdAsync(targetUserId);
         if (targetUser == null)
-            throw new KeyNotFoundException($"User with id {request.TargetUserId} not found");
+            throw new KeyNotFoundException($"User with id {targetUserId} not found");
 
-        var isAlreadyFollowing = await _userFollowRepository.IsFollowingAsync(parsedUserId, request.TargetUserId);
+        var isAlreadyFollowing = await _userFollowRepository.IsFollowingAsync(parsedUserId, targetUserId);
         if (isAlreadyFollowing)
             throw new InvalidOperationException("You are already following this user");
 
@@ -42,7 +47,7 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, Unit>
         {
             Id = Guid.NewGuid(),
             FollowerId = parsedUserId,
-            FollowingId = request.TargetUserId,
+            FollowingId = targetUserId,
             CreatedAt = DateTime.UtcNow
         };
 

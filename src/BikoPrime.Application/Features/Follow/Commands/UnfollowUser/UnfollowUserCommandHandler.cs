@@ -26,14 +26,19 @@ public class UnfollowUserCommandHandler : IRequestHandler<UnfollowUserCommand, U
             throw new UnauthorizedAccessException("User not authenticated");
         }
 
-        var userFollow = await _userFollowRepository.GetFollowAsync(parsedUserId, request.TargetUserId);
+        if (string.IsNullOrEmpty(request.FollowingId) || !Guid.TryParse(request.FollowingId, out var targetUserId))
+        {
+            throw new InvalidOperationException("Invalid target user ID");
+        }
+
+        var userFollow = await _userFollowRepository.GetFollowAsync(parsedUserId, targetUserId);
         if (userFollow == null)
             throw new KeyNotFoundException("You are not following this user");
 
         await _userFollowRepository.DeleteAsync(userFollow.Id);
 
         // Update follower/following counts
-        var targetUser = await _userRepository.GetByIdAsync(request.TargetUserId);
+        var targetUser = await _userRepository.GetByIdAsync(targetUserId);
         if (targetUser != null)
         {
             targetUser.FollowersCount = Math.Max(0, targetUser.FollowersCount - 1);
