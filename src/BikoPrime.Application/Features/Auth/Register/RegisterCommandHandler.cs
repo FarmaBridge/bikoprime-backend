@@ -7,7 +7,7 @@ using BikoPrime.Application.Interfaces;
 using BikoPrime.Domain.Entities;
 using BikoPrime.Domain.Exceptions;
 
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthResponseDto>
+public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterResponseDto>
 {
     private readonly UserManager<User> _userManager;
     private readonly ITokenService _tokenService;
@@ -23,7 +23,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
         _refreshTokenRepository = refreshTokenRepository;
     }
 
-    public async Task<AuthResponseDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<RegisterResponseDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         if (await _userManager.FindByEmailAsync(request.Email) != null)
             throw new DomainException("E-mail já cadastrado", "EMAIL_IN_USE");
@@ -57,26 +57,10 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
             throw new DomainException(errors, "VALIDATION_ERROR");
         }
 
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!);
-        var refreshToken = _tokenService.GenerateRefreshToken(user.Id, user.Email);
-
-        var refreshTokenEntity = new RefreshToken
-        {
-            Id = Guid.NewGuid(),
-            UserId = user.Id,
-            Token = refreshToken,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
-            CreatedAt = DateTime.UtcNow,
-            IsRevoked = false
-        };
-
-        await _refreshTokenRepository.CreateAsync(refreshTokenEntity);
-
-        return new AuthResponseDto
+        return new RegisterResponseDto
         {
             User = MapToUserDto(user),
-            Token = accessToken,
-            RefreshToken = refreshToken
+            Message = "Conta criada com sucesso."
         };
     }
 

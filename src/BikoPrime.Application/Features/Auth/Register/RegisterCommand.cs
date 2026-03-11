@@ -3,7 +3,7 @@ namespace BikoPrime.Application.Features.Auth.Register;
 using MediatR;
 using BikoPrime.Application.DTOs.Auth;
 
-public class RegisterCommand : IRequest<AuthResponseDto>
+public class RegisterCommand : IRequest<RegisterResponseDto>
 {
     public string Name { get; set; } = string.Empty;
     

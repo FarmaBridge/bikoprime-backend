@@ -49,15 +49,6 @@ public class RegisterCommandHandlerTests
         _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
 
-        _tokenServiceMock.Setup(x => x.GenerateAccessToken(It.IsAny<Guid>(), It.IsAny<string>()))
-            .Returns("access_token");
-
-        _tokenServiceMock.Setup(x => x.GenerateRefreshToken(It.IsAny<Guid>(), It.IsAny<string>()))
-            .Returns("refresh_token");
-
-        _refreshTokenRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<RefreshToken>()))
-            .Returns(Task.CompletedTask);
-
         var handler = new RegisterCommandHandler(_userManagerMock.Object, _tokenServiceMock.Object, _refreshTokenRepositoryMock.Object);
 
         // Act
@@ -66,8 +57,7 @@ public class RegisterCommandHandlerTests
         // Assert
         Assert.NotNull(result);
         Assert.NotNull(result.User);
-        Assert.Equal("access_token", result.Token);
-        Assert.Equal("refresh_token", result.RefreshToken);
+        Assert.Equal("Conta criada com sucesso.", result.Message);
         _userManagerMock.Verify(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
     }
 

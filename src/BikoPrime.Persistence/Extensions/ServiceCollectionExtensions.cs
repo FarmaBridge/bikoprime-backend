@@ -14,11 +14,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection") 
-            ?? "Server=(localdb)\\mssqllocaldb;Database=BikoPrimeDb;Trusted_Connection=true;";
+            ?? "Server=localhost;Port=5432;Database=bikoprime_main_db;User Id=postgres;Password=root;";
 
         // DbContext
         services.AddDbContext<BikoPrimeDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            options.UseNpgsql(connectionString));
 
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();
