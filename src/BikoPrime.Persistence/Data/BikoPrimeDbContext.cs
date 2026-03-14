@@ -36,6 +36,12 @@ public class BikoPrimeDbContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
         {
             entity.Property(u => u.AvatarUrl).HasMaxLength(500);
             entity.Property(u => u.Address).HasMaxLength(500);
+            entity.Property(u => u.Street).HasMaxLength(100);
+            entity.Property(u => u.StreetNumber).HasMaxLength(10);
+            entity.Property(u => u.Complement).HasMaxLength(50);
+            entity.Property(u => u.Neighborhood).HasMaxLength(50);
+            entity.Property(u => u.City).HasMaxLength(50);
+            entity.Property(u => u.State).HasMaxLength(2);
             entity.Property(u => u.Bio).HasMaxLength(500);
             entity.Property(u => u.Rating).HasPrecision(3, 2);
         });

@@ -4,6 +4,32 @@ using Microsoft.AspNetCore.Identity;
 
 public class User : IdentityUser<Guid>
 {
+    public string? FirstName { get; set; }
+
+    public string? LastName { get; set; }
+
+    public string? DisplayName { get; set; }
+
+    public string? Gender { get; set; }
+
+    public string? Pronoun { get; set; }
+
+    public DateTime? DateOfBirth { get; set; }
+
+    public string? CEP { get; set; }
+
+    public string? Street { get; set; }
+
+    public string? StreetNumber { get; set; }
+
+    public string? Complement { get; set; }
+
+    public string? Neighborhood { get; set; }
+
+    public string? City { get; set; }
+
+    public string? State { get; set; }
+
     public string? AvatarUrl { get; set; }
 
     public double Latitude { get; set; }

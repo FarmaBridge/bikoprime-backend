@@ -31,16 +31,34 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         if (await _userManager.FindByNameAsync(request.UserName) != null)
             throw new DomainException("Username já em uso", "USERNAME_IN_USE");
 
+        // Use default avatar based on gender if not provided
+        var avatarUrl = request.AvatarUrl ?? GetDefaultAvatarUrl(request.Gender);
+
         var user = new User
         {
             Id = Guid.NewGuid(),
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            DisplayName = request.DisplayName,
             UserName = request.UserName,
             Email = request.Email,
             PhoneNumber = request.PhoneNumber,
-            AvatarUrl = request.AvatarUrl ?? string.Empty,
+            Gender = request.Gender,
+            Pronoun = request.Pronoun,
+            DateOfBirth = request.DateOfBirth.HasValue 
+                ? DateTime.SpecifyKind(request.DateOfBirth.Value, DateTimeKind.Utc) 
+                : (DateTime?)null,
+            CEP = request.CEP,
+            Street = request.Street,
+            StreetNumber = request.StreetNumber,
+            Complement = request.Complement,
+            Neighborhood = request.Neighborhood,
+            City = request.City,
+            State = request.State,
+            AvatarUrl = avatarUrl,
             Latitude = request.Location?.Latitude ?? 0,
             Longitude = request.Location?.Longitude ?? 0,
-            Address = request.Location?.Address ?? string.Empty,
+            Address = BuildFullAddress(request),
             Bio = request.Bio ?? string.Empty,
             Rating = 0,
             FollowersCount = 0,
@@ -64,15 +82,65 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         };
     }
 
+    private static string GetDefaultAvatarUrl(string? gender)
+    {
+        return gender?.ToLower() switch
+        {
+            "female" => "https://api.example.com/avatars/default-female.png",
+            "male" => "https://api.example.com/avatars/default-male.png",
+            _ => "https://api.example.com/avatars/default-neutral.png"
+        };
+    }
+
+    private static string BuildFullAddress(RegisterCommand request)
+    {
+        var parts = new List<string>();
+        
+        if (!string.IsNullOrWhiteSpace(request.Street))
+            parts.Add(request.Street);
+        
+        if (!string.IsNullOrWhiteSpace(request.StreetNumber))
+            parts.Add(request.StreetNumber);
+        
+        if (!string.IsNullOrWhiteSpace(request.Complement))
+            parts.Add(request.Complement);
+        
+        if (!string.IsNullOrWhiteSpace(request.Neighborhood))
+            parts.Add(request.Neighborhood);
+        
+        if (!string.IsNullOrWhiteSpace(request.City))
+            parts.Add(request.City);
+        
+        if (!string.IsNullOrWhiteSpace(request.State))
+            parts.Add(request.State);
+        
+        if (!string.IsNullOrWhiteSpace(request.CEP))
+            parts.Add(request.CEP);
+
+        return string.Join(", ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
+    }
+
     private static UserDto MapToUserDto(User user)
     {
         return new UserDto
         {
             Id = user.Id,
-            Name = user.UserName ?? string.Empty,
+            FirstName = user.FirstName ?? string.Empty,
+            LastName = user.LastName ?? string.Empty,
+            DisplayName = user.DisplayName ?? string.Empty,
             UserName = user.UserName ?? string.Empty,
             Email = user.Email ?? string.Empty,
             PhoneNumber = user.PhoneNumber ?? string.Empty,
+            Gender = user.Gender,
+            Pronoun = user.Pronoun,
+            DateOfBirth = user.DateOfBirth,
+            CEP = user.CEP,
+            Street = user.Street,
+            StreetNumber = user.StreetNumber,
+            Complement = user.Complement,
+            Neighborhood = user.Neighborhood,
+            City = user.City,
+            State = user.State,
             AvatarUrl = user.AvatarUrl,
             Location = new LocationDto
             {
@@ -88,3 +156,4 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         };
     }
 }
+

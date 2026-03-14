@@ -30,14 +30,17 @@ public class RegisterCommandHandlerTests
         // Arrange
         var command = new RegisterCommand
         {
-            Name = "Test User",
+            FirstName = "Test",
+            LastName = "User",
+            DisplayName = "testuser",
             UserName = "testuser",
             Email = "test@email.com",
             PhoneNumber = "(11) 99999-1111",
-            Password = "Password123",
-            AvatarUrl = null,
-            Location = null,
-            Bio = null
+            Gender = "male",
+            Pronoun = "he/him",
+            DateOfBirth = new DateTime(1990, 1, 1),
+            CEP = "12345-678",
+            Password = "Password123"
         };
 
         _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
@@ -67,10 +70,16 @@ public class RegisterCommandHandlerTests
         // Arrange
         var command = new RegisterCommand
         {
-            Name = "Test User",
+            FirstName = "Test",
+            LastName = "User",
+            DisplayName = "testuser",
             UserName = "testuser",
             Email = "existing@email.com",
             PhoneNumber = "(11) 99999-1111",
+            Gender = "male",
+            Pronoun = "he/him",
+            DateOfBirth = new DateTime(1990, 1, 1),
+            CEP = "12345-678",
             Password = "Password123"
         };
 
@@ -92,10 +101,16 @@ public class RegisterCommandHandlerTests
         // Arrange
         var command = new RegisterCommand
         {
-            Name = "Test User",
+            FirstName = "Test",
+            LastName = "User",
+            DisplayName = "testuser",
             UserName = "existinguser",
             Email = "new@email.com",
             PhoneNumber = "(11) 99999-1111",
+            Gender = "male",
+            Pronoun = "he/him",
+            DateOfBirth = new DateTime(1990, 1, 1),
+            CEP = "12345-678",
             Password = "Password123"
         };
 

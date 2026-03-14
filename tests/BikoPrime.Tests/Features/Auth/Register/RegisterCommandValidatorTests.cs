@@ -19,10 +19,16 @@ public class RegisterCommandValidatorTests
         // Arrange
         var command = new RegisterCommand
         {
-            Name = "Test User",
+            FirstName = "Test",
+            LastName = "User",
+            DisplayName = "testuser",
             UserName = "testuser",
             Email = "test@email.com",
             PhoneNumber = "(11) 99999-1111",
+            Gender = "male",
+            Pronoun = "he/him",
+            DateOfBirth = new DateTime(1990, 1, 1),
+            CEP = "12345-678",
             Password = "Password123"
         };
 
@@ -34,15 +40,21 @@ public class RegisterCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_WithEmptyName_ShouldHaveError()
+    public void Validate_WithEmptyFirstName_ShouldHaveError()
     {
         // Arrange
         var command = new RegisterCommand
         {
-            Name = string.Empty,
+            FirstName = string.Empty,
+            LastName = "User",
+            DisplayName = "testuser",
             UserName = "testuser",
             Email = "test@email.com",
             PhoneNumber = "(11) 99999-1111",
+            Gender = "male",
+            Pronoun = "he/him",
+            DateOfBirth = new DateTime(1990, 1, 1),
+            CEP = "12345-678",
             Password = "Password123"
         };
 
@@ -50,7 +62,7 @@ public class RegisterCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(x => x.FirstName);
     }
 
     [Fact]
@@ -59,10 +71,16 @@ public class RegisterCommandValidatorTests
         // Arrange
         var command = new RegisterCommand
         {
-            Name = "Test User",
+            FirstName = "Test",
+            LastName = "User",
+            DisplayName = "testuser",
             UserName = "testuser",
             Email = "invalid-email",
             PhoneNumber = "(11) 99999-1111",
+            Gender = "male",
+            Pronoun = "he/him",
+            DateOfBirth = new DateTime(1990, 1, 1),
+            CEP = "12345-678",
             Password = "Password123"
         };
 
@@ -79,10 +97,16 @@ public class RegisterCommandValidatorTests
         // Arrange
         var command = new RegisterCommand
         {
-            Name = "Test User",
+            FirstName = "Test",
+            LastName = "User",
+            DisplayName = "testuser",
             UserName = "testuser",
             Email = "test@email.com",
             PhoneNumber = "(11) 99999-1111",
+            Gender = "male",
+            Pronoun = "he/him",
+            DateOfBirth = new DateTime(1990, 1, 1),
+            CEP = "12345-678",
             Password = "short"
         };
 
@@ -99,10 +123,16 @@ public class RegisterCommandValidatorTests
         // Arrange
         var command = new RegisterCommand
         {
-            Name = "Test User",
+            FirstName = "Test",
+            LastName = "User",
+            DisplayName = "testuser",
             UserName = "invalid@user",
             Email = "test@email.com",
             PhoneNumber = "(11) 99999-1111",
+            Gender = "male",
+            Pronoun = "he/him",
+            DateOfBirth = new DateTime(1990, 1, 1),
+            CEP = "12345-678",
             Password = "Password123"
         };
 

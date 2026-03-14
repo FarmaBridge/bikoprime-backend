@@ -9,6 +9,8 @@ using BikoPrime.Application.Features.Auth.Login;
 using BikoPrime.Application.Features.Auth.GoogleAuth;
 using BikoPrime.Application.Features.Auth.Logout;
 using BikoPrime.Application.Features.Auth.RefreshToken;
+using BikoPrime.Application.Features.Auth.ValidateUsername;
+using BikoPrime.Application.Features.Auth.ValidateEmail;
 
 [ApiController]
 [Route("api/auth")]
@@ -29,10 +31,22 @@ public class AuthController : ControllerBase
     {
         var command = new RegisterCommand
         {
-            Name = request.Name,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            DisplayName = request.DisplayName,
             UserName = request.UserName,
             Email = request.Email,
             PhoneNumber = request.PhoneNumber,
+            Gender = request.Gender,
+            Pronoun = request.Pronoun,
+            DateOfBirth = request.DateOfBirth,
+            CEP = request.CEP,
+            Street = request.Street,
+            StreetNumber = request.StreetNumber,
+            Complement = request.Complement,
+            Neighborhood = request.Neighborhood,
+            City = request.City,
+            State = request.State,
             Password = request.Password,
             AvatarUrl = request.AvatarUrl,
             Location = request.Location,
@@ -41,6 +55,24 @@ public class AuthController : ControllerBase
 
         var result = await _mediator.Send(command);
         return CreatedAtAction(nameof(Register), result);
+    }
+
+    [HttpPost("validate-username")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ValidateUsernameResponse>> ValidateUsername([FromBody] ValidateUsernameQuery query)
+    {
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("validate-email")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ValidateEmailResponse>> ValidateEmail([FromBody] ValidateEmailQuery query)
+    {
+        var result = await _mediator.Send(query);
+        return Ok(result);
     }
 
     [HttpPost("login")]

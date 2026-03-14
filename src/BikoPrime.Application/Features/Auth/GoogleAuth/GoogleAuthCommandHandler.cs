@@ -100,10 +100,16 @@ public class GoogleAuthCommandHandler : IRequestHandler<GoogleAuthCommand, AuthR
         return new UserDto
         {
             Id = user.Id,
-            Name = user.UserName ?? string.Empty,
+            FirstName = user.FirstName ?? string.Empty,
+            LastName = user.LastName ?? string.Empty,
+            DisplayName = user.DisplayName ?? string.Empty,
             UserName = user.UserName ?? string.Empty,
             Email = user.Email ?? string.Empty,
             PhoneNumber = user.PhoneNumber ?? string.Empty,
+            Gender = user.Gender,
+            Pronoun = user.Pronoun,
+            DateOfBirth = user.DateOfBirth,
+            CEP = user.CEP,
             AvatarUrl = user.AvatarUrl,
             Location = new LocationDto
             {
