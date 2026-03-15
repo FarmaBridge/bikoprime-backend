@@ -13,17 +13,20 @@ public class GoogleAuthCommandHandler : IRequestHandler<GoogleAuthCommand, AuthR
     private readonly UserManager<User> _userManager;
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IUserPhotoRepository _userPhotoRepository;
 
     public GoogleAuthCommandHandler(
         IGoogleTokenValidator googleTokenValidator,
         UserManager<User> userManager,
         ITokenService tokenService,
-        IRefreshTokenRepository refreshTokenRepository)
+        IRefreshTokenRepository refreshTokenRepository,
+        IUserPhotoRepository userPhotoRepository)
     {
         _googleTokenValidator = googleTokenValidator;
         _userManager = userManager;
         _tokenService = tokenService;
         _refreshTokenRepository = refreshTokenRepository;
+        _userPhotoRepository = userPhotoRepository;
     }
 
     public async Task<AuthResponseDto> Handle(GoogleAuthCommand request, CancellationToken cancellationToken)
@@ -39,7 +42,6 @@ public class GoogleAuthCommandHandler : IRequestHandler<GoogleAuthCommand, AuthR
                 Id = Guid.NewGuid(),
                 UserName = GenerateUsernameFromEmail(email),
                 Email = email,
-                AvatarUrl = picture ?? string.Empty,
                 PhoneNumber = string.Empty,
                 Latitude = 0,
                 Longitude = 0,
@@ -81,9 +83,12 @@ public class GoogleAuthCommandHandler : IRequestHandler<GoogleAuthCommand, AuthR
 
         await _refreshTokenRepository.CreateAsync(refreshTokenEntity);
 
+        // Fetch latest active photo for user
+        var latestPhoto = await _userPhotoRepository.GetLatestByUserIdAsync(user.Id, cancellationToken);
+
         return new AuthResponseDto
         {
-            User = MapToUserDto(user),
+            User = MapToUserDto(user, latestPhoto?.Id),
             Token = accessToken,
             RefreshToken = refreshToken
         };
@@ -95,7 +100,7 @@ public class GoogleAuthCommandHandler : IRequestHandler<GoogleAuthCommand, AuthR
         return username.Length > 20 ? username[..20] : username;
     }
 
-    private static UserDto MapToUserDto(User user)
+    private static UserDto MapToUserDto(User user, Guid? photoId = null)
     {
         return new UserDto
         {
@@ -110,7 +115,7 @@ public class GoogleAuthCommandHandler : IRequestHandler<GoogleAuthCommand, AuthR
             Pronoun = user.Pronoun,
             DateOfBirth = user.DateOfBirth,
             CEP = user.CEP,
-            AvatarUrl = user.AvatarUrl,
+            PhotoId = photoId,
             Location = new LocationDto
             {
                 Latitude = user.Latitude,

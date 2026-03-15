@@ -12,15 +12,18 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
     private readonly UserManager<User> _userManager;
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IUserPhotoRepository _userPhotoRepository;
 
     public LoginCommandHandler(
         UserManager<User> userManager,
         ITokenService tokenService,
-        IRefreshTokenRepository refreshTokenRepository)
+        IRefreshTokenRepository refreshTokenRepository,
+        IUserPhotoRepository userPhotoRepository)
     {
         _userManager = userManager;
         _tokenService = tokenService;
         _refreshTokenRepository = refreshTokenRepository;
+        _userPhotoRepository = userPhotoRepository;
     }
 
     public async Task<AuthResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -56,15 +59,18 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
 
         await _refreshTokenRepository.CreateAsync(refreshTokenEntity);
 
+        // Fetch latest active photo for user
+        var latestPhoto = await _userPhotoRepository.GetLatestByUserIdAsync(user.Id, cancellationToken);
+
         return new AuthResponseDto
         {
-            User = MapToUserDto(user),
+            User = MapToUserDto(user, latestPhoto?.Id),
             Token = accessToken,
             RefreshToken = refreshToken
         };
     }
 
-    private static UserDto MapToUserDto(User user)
+    private static UserDto MapToUserDto(User user, Guid? photoId = null)
     {
         return new UserDto
         {
@@ -79,7 +85,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
             Pronoun = user.Pronoun,
             DateOfBirth = user.DateOfBirth,
             CEP = user.CEP,
-            AvatarUrl = user.AvatarUrl,
+            PhotoId = photoId,
             Location = new LocationDto
             {
                 Latitude = user.Latitude,

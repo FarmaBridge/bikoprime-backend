@@ -31,9 +31,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         if (await _userManager.FindByNameAsync(request.UserName) != null)
             throw new DomainException("Username já em uso", "USERNAME_IN_USE");
 
-        // Use default avatar based on gender if not provided
-        var avatarUrl = request.AvatarUrl ?? GetDefaultAvatarUrl(request.Gender);
-
         var user = new User
         {
             Id = Guid.NewGuid(),
@@ -55,7 +52,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
             Neighborhood = request.Neighborhood,
             City = request.City,
             State = request.State,
-            AvatarUrl = avatarUrl,
             Latitude = request.Location?.Latitude ?? 0,
             Longitude = request.Location?.Longitude ?? 0,
             Address = BuildFullAddress(request),
@@ -79,16 +75,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         {
             User = MapToUserDto(user),
             Message = "Conta criada com sucesso."
-        };
-    }
-
-    private static string GetDefaultAvatarUrl(string? gender)
-    {
-        return gender?.ToLower() switch
-        {
-            "female" => "https://api.example.com/avatars/default-female.png",
-            "male" => "https://api.example.com/avatars/default-male.png",
-            _ => "https://api.example.com/avatars/default-neutral.png"
         };
     }
 
@@ -120,7 +106,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         return string.Join(", ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
     }
 
-    private static UserDto MapToUserDto(User user)
+    private static UserDto MapToUserDto(User user, Guid? photoId = null)
     {
         return new UserDto
         {
@@ -141,7 +127,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
             Neighborhood = user.Neighborhood,
             City = user.City,
             State = user.State,
-            AvatarUrl = user.AvatarUrl,
+            PhotoId = photoId,
             Location = new LocationDto
             {
                 Latitude = user.Latitude,

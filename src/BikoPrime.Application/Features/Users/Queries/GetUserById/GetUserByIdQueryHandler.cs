@@ -9,11 +9,16 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserPro
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserFollowRepository _userFollowRepository;
+    private readonly IUserPhotoRepository _userPhotoRepository;
 
-    public GetUserByIdQueryHandler(IUserRepository userRepository, IUserFollowRepository userFollowRepository)
+    public GetUserByIdQueryHandler(
+        IUserRepository userRepository,
+        IUserFollowRepository userFollowRepository,
+        IUserPhotoRepository userPhotoRepository)
     {
         _userRepository = userRepository;
         _userFollowRepository = userFollowRepository;
+        _userPhotoRepository = userPhotoRepository;
     }
 
     public async Task<UserProfileDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
@@ -28,19 +33,21 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserPro
             isFollowing = await _userFollowRepository.IsFollowingAsync(Guid.Parse(request.CurrentUserId), Guid.Parse(request.UserId));
         }
 
-        return MapToDto(user, isFollowing);
+        var latestPhoto = await _userPhotoRepository.GetLatestByUserIdAsync(user.Id, cancellationToken);
+        return MapToDto(user, isFollowing, latestPhoto?.Id);
     }
 
-    private UserProfileDto MapToDto(BikoPrime.Domain.Entities.User user, bool isFollowing)
+    private static UserProfileDto MapToDto(BikoPrime.Domain.Entities.User user, bool isFollowing, Guid? photoId)
     {
         return new UserProfileDto
         {
             Id = user.Id,
-            Name = user.UserName ?? string.Empty,
+            Name = user.DisplayName ?? user.UserName ?? string.Empty,
+            DisplayName = user.DisplayName ?? user.UserName ?? string.Empty,
             UserName = user.UserName ?? string.Empty,
             Email = user.Email ?? string.Empty,
             PhoneNumber = user.PhoneNumber ?? string.Empty,
-            AvatarUrl = user.AvatarUrl,
+            PhotoId = photoId,
             Location = new LocationDto
             {
                 Latitude = user.Latitude,

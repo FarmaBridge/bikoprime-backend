@@ -48,7 +48,6 @@ public class AuthController : ControllerBase
             City = request.City,
             State = request.State,
             Password = request.Password,
-            AvatarUrl = request.AvatarUrl,
             Location = request.Location,
             Bio = request.Bio
         };

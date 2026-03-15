@@ -13,6 +13,7 @@ public class LoginCommandHandlerTests
     private readonly Mock<UserManager<User>> _userManagerMock;
     private readonly Mock<ITokenService> _tokenServiceMock;
     private readonly Mock<IRefreshTokenRepository> _refreshTokenRepositoryMock;
+    private readonly Mock<IUserPhotoRepository> _userPhotoRepositoryMock;
 
     public LoginCommandHandlerTests()
     {
@@ -22,6 +23,7 @@ public class LoginCommandHandlerTests
 
         _tokenServiceMock = new Mock<ITokenService>();
         _refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
+        _userPhotoRepositoryMock = new Mock<IUserPhotoRepository>();
     }
 
     [Fact]
@@ -59,7 +61,10 @@ public class LoginCommandHandlerTests
         _refreshTokenRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<RefreshToken>()))
             .Returns(Task.CompletedTask);
 
-        var handler = new LoginCommandHandler(_userManagerMock.Object, _tokenServiceMock.Object, _refreshTokenRepositoryMock.Object);
+        _userPhotoRepositoryMock.Setup(x => x.GetLatestByUserIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserPhoto)null!);
+
+        var handler = new LoginCommandHandler(_userManagerMock.Object, _tokenServiceMock.Object, _refreshTokenRepositoryMock.Object, _userPhotoRepositoryMock.Object);
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
@@ -84,7 +89,7 @@ public class LoginCommandHandlerTests
         _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
             .ReturnsAsync((User)null!);
 
-        var handler = new LoginCommandHandler(_userManagerMock.Object, _tokenServiceMock.Object, _refreshTokenRepositoryMock.Object);
+        var handler = new LoginCommandHandler(_userManagerMock.Object, _tokenServiceMock.Object, _refreshTokenRepositoryMock.Object, _userPhotoRepositoryMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<DomainException>(() => handler.Handle(command, CancellationToken.None));
@@ -114,7 +119,7 @@ public class LoginCommandHandlerTests
         _userManagerMock.Setup(x => x.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>()))
             .ReturnsAsync(false);
 
-        var handler = new LoginCommandHandler(_userManagerMock.Object, _tokenServiceMock.Object, _refreshTokenRepositoryMock.Object);
+        var handler = new LoginCommandHandler(_userManagerMock.Object, _tokenServiceMock.Object, _refreshTokenRepositoryMock.Object, _userPhotoRepositoryMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<DomainException>(() => handler.Handle(command, CancellationToken.None));

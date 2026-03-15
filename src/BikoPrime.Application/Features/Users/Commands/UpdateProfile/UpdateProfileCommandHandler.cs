@@ -10,11 +10,16 @@ namespace BikoPrime.Application.Features.Users.Commands.UpdateProfile;
 public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand, UserProfileDto>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IUserPhotoRepository _userPhotoRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UpdateProfileCommandHandler(IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
+    public UpdateProfileCommandHandler(
+        IUserRepository userRepository,
+        IUserPhotoRepository userPhotoRepository,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userRepository = userRepository;
+        _userPhotoRepository = userPhotoRepository;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -42,9 +47,6 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
         if (!string.IsNullOrEmpty(request.PhoneNumber))
             user.PhoneNumber = request.PhoneNumber;
 
-        if (!string.IsNullOrEmpty(request.AvatarUrl))
-            user.AvatarUrl = request.AvatarUrl;
-
         if (request.Latitude.HasValue)
             user.Latitude = request.Latitude.Value;
 
@@ -60,20 +62,22 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
         user.UpdatedAt = DateTime.UtcNow;
 
         await _userRepository.UpdateAsync(user);
+        var latestPhoto = await _userPhotoRepository.GetLatestByUserIdAsync(user.Id, cancellationToken);
 
-        return MapToDto(user, false);
+        return MapToDto(user, false, latestPhoto?.Id);
     }
 
-    private UserProfileDto MapToDto(BikoPrime.Domain.Entities.User user, bool isFollowing)
+    private static UserProfileDto MapToDto(BikoPrime.Domain.Entities.User user, bool isFollowing, Guid? photoId)
     {
         return new UserProfileDto
         {
             Id = user.Id,
-            Name = user.UserName ?? string.Empty,
+            Name = user.DisplayName ?? user.UserName ?? string.Empty,
+            DisplayName = user.DisplayName ?? user.UserName ?? string.Empty,
             UserName = user.UserName ?? string.Empty,
             Email = user.Email ?? string.Empty,
             PhoneNumber = user.PhoneNumber ?? string.Empty,
-            AvatarUrl = user.AvatarUrl,
+            PhotoId = photoId,
             Location = new LocationDto
             {
                 Latitude = user.Latitude,

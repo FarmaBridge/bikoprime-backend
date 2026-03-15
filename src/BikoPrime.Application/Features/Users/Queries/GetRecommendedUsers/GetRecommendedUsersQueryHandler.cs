@@ -9,11 +9,16 @@ public class GetRecommendedUsersQueryHandler : IRequestHandler<GetRecommendedUse
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserFollowRepository _userFollowRepository;
+    private readonly IUserPhotoRepository _userPhotoRepository;
 
-    public GetRecommendedUsersQueryHandler(IUserRepository userRepository, IUserFollowRepository userFollowRepository)
+    public GetRecommendedUsersQueryHandler(
+        IUserRepository userRepository,
+        IUserFollowRepository userFollowRepository,
+        IUserPhotoRepository userPhotoRepository)
     {
         _userRepository = userRepository;
         _userFollowRepository = userFollowRepository;
+        _userPhotoRepository = userPhotoRepository;
     }
 
     public async Task<List<UserProfileDto>> Handle(GetRecommendedUsersQuery request, CancellationToken cancellationToken)
@@ -28,22 +33,24 @@ public class GetRecommendedUsersQueryHandler : IRequestHandler<GetRecommendedUse
             {
                 isFollowing = await _userFollowRepository.IsFollowingAsync(Guid.Parse(request.CurrentUserId), user.Id);
             }
-            result.Add(MapToDto(user, isFollowing));
+            var latestPhoto = await _userPhotoRepository.GetLatestByUserIdAsync(user.Id, cancellationToken);
+            result.Add(MapToDto(user, isFollowing, latestPhoto?.Id));
         }
 
         return result;
     }
 
-    private UserProfileDto MapToDto(BikoPrime.Domain.Entities.User user, bool isFollowing)
+    private static UserProfileDto MapToDto(BikoPrime.Domain.Entities.User user, bool isFollowing, Guid? photoId)
     {
         return new UserProfileDto
         {
             Id = user.Id,
-            Name = user.UserName ?? string.Empty,
+            Name = user.DisplayName ?? user.UserName ?? string.Empty,
+            DisplayName = user.DisplayName ?? user.UserName ?? string.Empty,
             UserName = user.UserName ?? string.Empty,
             Email = user.Email ?? string.Empty,
             PhoneNumber = user.PhoneNumber ?? string.Empty,
-            AvatarUrl = user.AvatarUrl,
+            PhotoId = photoId,
             Location = new LocationDto
             {
                 Latitude = user.Latitude,

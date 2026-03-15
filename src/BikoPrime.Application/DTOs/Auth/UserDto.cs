@@ -36,7 +36,7 @@ public class UserDto
 
     public string? State { get; set; }
     
-    public string? AvatarUrl { get; set; }
+    public Guid? PhotoId { get; set; }
     
     public LocationDto Location { get; set; } = new();
     

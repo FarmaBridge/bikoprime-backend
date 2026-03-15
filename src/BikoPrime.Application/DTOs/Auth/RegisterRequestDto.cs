@@ -36,8 +36,6 @@ public class RegisterRequestDto
     
     public string Password { get; set; } = string.Empty;
     
-    public string? AvatarUrl { get; set; }
-    
     public LocationDto? Location { get; set; }
     
     public string? Bio { get; set; }
