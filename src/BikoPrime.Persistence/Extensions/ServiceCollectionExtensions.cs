@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IContractRepository, ContractRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<IUserFollowRepository, UserFollowRepository>();
+        services.AddScoped<IUserPhotoRepository, UserPhotoRepository>();
 
         // IHttpContextAccessor for accessing user claims in handlers
         services.AddHttpContextAccessor();

@@ -22,6 +22,8 @@ public class BikoPrimeDbContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
     public DbSet<Review> Reviews { get; set; } = null!;
     
     public DbSet<UserFollow> UserFollows { get; set; } = null!;
+    
+    public DbSet<UserPhoto> UserPhotos { get; set; } = null!;
 
     public BikoPrimeDbContext(DbContextOptions<BikoPrimeDbContext> options)
         : base(options)
@@ -201,6 +203,19 @@ public class BikoPrimeDbContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(uf => new { uf.FollowerId, uf.FollowingId }).IsUnique();
+        });
+
+        builder.Entity<UserPhoto>(entity =>
+        {
+            entity.HasKey(up => up.Id);
+            entity.Property(up => up.FileName).IsRequired().HasMaxLength(500);
+            entity.Property(up => up.FileExtension).IsRequired().HasMaxLength(10);
+            entity.Property(up => up.ContentType).IsRequired().HasMaxLength(100);
+            entity.Property(up => up.FilePath).IsRequired().HasMaxLength(1000);
+            entity.Property(up => up.IsProfilePicture).HasDefaultValue(true);
+
+            entity.HasIndex(up => up.UserId);
+            entity.HasIndex(up => new { up.UserId, up.UploadedAt }).IsDescending(false, true);
         });
     }
 }

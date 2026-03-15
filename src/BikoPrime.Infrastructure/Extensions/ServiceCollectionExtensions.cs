@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ITokenService>(provider => new TokenService(jwtSecret));
         services.AddScoped<IGoogleTokenValidator>(provider => new GoogleTokenValidator(googleClientId));
+        services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
         return services;
     }
