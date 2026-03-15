@@ -25,8 +25,9 @@ builder.Services.AddCors(options =>
 // Register all layers
 // Persistence handles: DbContext, Repositories, Identity
 // Infrastructure handles: TokenService, GoogleValidator, JWT Authentication
-// Application handles: MediatR, Validators
+// Application handles: MediatR, Validators, Photo Services
 builder.Services.AddApplication();
+builder.Services.AddPhotoServices();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);

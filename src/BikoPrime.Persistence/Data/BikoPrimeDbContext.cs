@@ -208,14 +208,34 @@ public class BikoPrimeDbContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
         builder.Entity<UserPhoto>(entity =>
         {
             entity.HasKey(up => up.Id);
+            
+            // Basic properties
             entity.Property(up => up.FileName).IsRequired().HasMaxLength(500);
-            entity.Property(up => up.FileExtension).IsRequired().HasMaxLength(10);
             entity.Property(up => up.ContentType).IsRequired().HasMaxLength(100);
-            entity.Property(up => up.FilePath).IsRequired().HasMaxLength(1000);
-            entity.Property(up => up.IsProfilePicture).HasDefaultValue(true);
-
-            entity.HasIndex(up => up.UserId);
-            entity.HasIndex(up => new { up.UserId, up.UploadedAt }).IsDescending(false, true);
+            entity.Property(up => up.FileSizeBytes).IsRequired();
+            
+            // Photo data (BLOB/BYTEA no BD - 100% armazenado aqui)
+            entity.Property(up => up.PhotoData).IsRequired();
+            
+            // Security properties
+            entity.Property(up => up.FileHash).IsRequired().HasMaxLength(64);
+            entity.Property(up => up.Checksum).IsRequired().HasMaxLength(64);
+            
+            // Metadata properties
+            entity.Property(up => up.IsActive).IsRequired().HasDefaultValue(true);
+            entity.Property(up => up.UploadedAt).IsRequired();
+            entity.Property(up => up.DeactivatedAt);
+            entity.Property(up => up.DeactivationReason).HasMaxLength(500);
+            
+            // Analytics properties
+            entity.Property(up => up.AccessCount).IsRequired().HasDefaultValue(0);
+            entity.Property(up => up.LastAccessedAt);
+            
+            // Indices for performance
+            entity.HasIndex(up => new { up.UserId, up.IsActive })
+                .HasDatabaseName("IX_UserPhotos_UserId_IsActive");
+            entity.HasIndex(up => up.FileHash)
+                .HasDatabaseName("IX_UserPhotos_FileHash");
         });
     }
 }
